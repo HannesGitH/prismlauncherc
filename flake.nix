@@ -8,7 +8,7 @@
   };
 
   outputs =
-    { nixpkgs, prismlauncher, ... }:
+    { nixpkgs, prismlauncher_upstream, ... }:
     let
       addPatches = pkg: patches:
         pkg.overrideAttrs
@@ -16,7 +16,7 @@
     in rec
     {
       packages = {
-        default = addPatches prismlauncher [ ./crack.patch ];
+        default = addPatches prismlauncher_upstream [ ./crack.patch ];
       };
 
       overlays.default = final: prev: {
