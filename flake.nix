@@ -25,7 +25,7 @@
       });
 
       overlays.default = final: prev: {
-        prismlauncher = packages.default;
+        prismlauncher = packages.${final.system}.default;
       };
     };
 }
