@@ -21,7 +21,12 @@
     in rec
     {
       packages = forAllSystems (system: {
-        default = addPatches prismlauncher_upstream.packages.${system}.prismlauncher [ ./crack.patch ];
+        default = 
+          (ups: 
+            ups.prismlauncher.override {
+              prismlauncher-unwrapped = (addPatches ups.prismlauncher-unwrapped [ ./crack.patch ]);
+            }
+          ) prismlauncher_upstream.packages.${system};
       });
 
       overlays.default = final: prev: {
