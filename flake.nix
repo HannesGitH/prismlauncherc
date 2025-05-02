@@ -25,9 +25,11 @@
         nativeBuildInputs = with pkgs; [ git gawk ];
         buildPhase = ''
           echo "patching"
-          awk '/bool AccountList::anyAccountIsValid\(\)/ { print; getline; print "{"; print "    return true;"; next }1' launcher/minecraft/auth/AccountList.cpp > temp
+          awk '/bool AccountList::anyAccountIsValid\(\)/               { print; getline; print "{"; print "    return true;"; next }1' launcher/minecraft/auth/AccountList.cpp > temp_account_list
+          awk '/void AuthSession::MakeDemo\(QString name, QString u\)/ { print; getline; print "{"; print "    return;"     ; next }1' launcher/minecraft/auth/AuthSession.cpp > temp_auth_session
           echo "generating patch"
-          git --no-pager diff --no-index launcher/minecraft/auth/AccountList.cpp temp > crack.patch || true
+          git --no-pager diff --no-index launcher/minecraft/auth/AccountList.cpp temp_account_list > crack.patch || true
+          git --no-pager diff --no-index launcher/minecraft/auth/AuthSession.cpp temp_auth_session >> crack.patch || true
           echo "done"
         '';
         installPhase = ''

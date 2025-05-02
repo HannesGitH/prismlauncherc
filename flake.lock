@@ -1,0 +1,96 @@
+{
+  "nodes": {
+    "libnbtplusplus": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1744811532,
+        "narHash": "sha256-qhmjaRkt+O7A+gu6HjUkl7QzOEb4r8y8vWZMG2R/C6o=",
+        "owner": "PrismLauncher",
+        "repo": "libnbtplusplus",
+        "rev": "531449ba1c930c98e0bcf5d332b237a8566f9d78",
+        "type": "github"
+      },
+      "original": {
+        "owner": "PrismLauncher",
+        "repo": "libnbtplusplus",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1746141548,
+        "narHash": "sha256-IgBWhX7A2oJmZFIrpRuMnw5RAufVnfvOgHWgIdds+hc=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "f02fddb8acef29a8b32f10a335d44828d7825b78",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1745526057,
+        "narHash": "sha256-ITSpPDwvLBZBnPRS2bUcHY3gZSwis/uTe255QgMtTLA=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "f771eb401a46846c1aebd20552521b233dd7e18b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "prismlauncher_upstream": {
+      "inputs": {
+        "libnbtplusplus": "libnbtplusplus",
+        "nixpkgs": "nixpkgs_2",
+        "qt-qrcodegenerator": "qt-qrcodegenerator"
+      },
+      "locked": {
+        "lastModified": 1746119911,
+        "narHash": "sha256-x2lKxY/Z9i+Doesj+3vsleKBTf8kH69pY79omozK9mI=",
+        "owner": "PrismLauncher",
+        "repo": "PrismLauncher",
+        "rev": "62afb86c6bcb0c4d048baeebc7096c8c9d4b3484",
+        "type": "github"
+      },
+      "original": {
+        "owner": "PrismLauncher",
+        "repo": "PrismLauncher",
+        "type": "github"
+      }
+    },
+    "qt-qrcodegenerator": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1737616857,
+        "narHash": "sha256-6SugPt0lp1Gz7nV23FLmsmpfzgFItkSw7jpGftsDPWc=",
+        "owner": "nayuki",
+        "repo": "QR-Code-generator",
+        "rev": "2c9044de6b049ca25cb3cd1649ed7e27aa055138",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nayuki",
+        "repo": "QR-Code-generator",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "nixpkgs": "nixpkgs",
+        "prismlauncher_upstream": "prismlauncher_upstream"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
