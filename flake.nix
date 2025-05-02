@@ -26,7 +26,7 @@
         buildPhase = ''
           echo "patching"
           awk '/bool AccountList::anyAccountIsValid\(\)/               { print; getline; print "{"; print "    return true;"; next }1' launcher/minecraft/auth/AccountList.cpp > temp_account_list
-          awk '/bool ownsMinecraft\(\) const/ { print "    bool ownsMinecraft() const { return true; }"; while(getline && !/^}/) {}; next }1' launcher/minecraft/auth/MinecraftAccount.h > temp_own_minecraft
+          awk '/bool ownsMinecraft\(\) const/ { print "    bool ownsMinecraft() const { return true; }"; next }1' launcher/minecraft/auth/MinecraftAccount.h > temp_own_minecraft
           echo "generating patch"
           git --no-pager diff --no-index launcher/minecraft/auth/AccountList.cpp temp_account_list >> crack.patch || true
           git --no-pager diff --no-index launcher/minecraft/auth/MinecraftAccount.h temp_own_minecraft >> crack.patch || true
@@ -39,6 +39,7 @@
     in rec
     {
       packages = forAllSystems (system: {
+        #patch = patch system prismlauncher_upstream.packages.${system}.prismlauncher-unwrapped.src;
         default = 
           (ups: 
             ups.prismlauncher.override {
