@@ -35,13 +35,17 @@
         installPhase = ''
           cp crack.patch $out
         '';
+        postInstall = lib.optionalString lib.stdenv.isDarwin ''
+          mkdir -p $out/bin
+          ln -s $out/Applications/PrismLauncher.app/Contents/MacOS/prismlauncher $out/bin/prismlauncher
+        '';
       }) nixpkgs.legacyPackages.${system}.pkgs;
     in rec
     {
       packages = forAllSystems (system: {
         #patch = patch system prismlauncher_upstream.packages.${system}.prismlauncher-unwrapped.src;
-        default = 
-          (ups: 
+        default =
+          (ups:
             ups.prismlauncher.override {
               prismlauncher-unwrapped = addPatches ups.prismlauncher-unwrapped [ (patch system ups.prismlauncher-unwrapped.src) ];
             }
