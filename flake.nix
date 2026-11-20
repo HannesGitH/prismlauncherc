@@ -35,7 +35,7 @@
         installPhase = ''
           cp crack.patch $out
         '';
-        postInstall = lib.optionalString lib.stdenv.isDarwin ''
+        postInstall = lib.optionalString pkgs.stdenv.isDarwin ''
           mkdir -p $out/bin
           ln -s $out/Applications/PrismLauncher.app/Contents/MacOS/prismlauncher $out/bin/prismlauncher
         '';
