@@ -53,14 +53,23 @@
         patchFile = patch system prismlauncher_upstream.packages.${system}.prismlauncher-unwrapped.src;
         default =
           (
-            ups:
-            ups.prismlauncher.override {
-              prismlauncher-unwrapped = addPatches ups.prismlauncher-unwrapped [
-                (patch system ups.prismlauncher-unwrapped.src)
-              ];
-            }
-          )
-            prismlauncher_upstream.packages.${system};
+            (
+              ups:
+              ups.prismlauncher.override {
+                prismlauncher-unwrapped = addPatches ups.prismlauncher-unwrapped [
+                  (patch system ups.prismlauncher-unwrapped.src)
+                ];
+              }
+            )
+              prismlauncher_upstream.packages.${system}
+              # unfortunately this is not executed currently, needs to be fixed
+          ).overrideAttrs
+            (old: {
+              postInstall = lib.optionalString nixpkgs.legacyPackages.${system}.pkgs.stdenv.isDarwin ''
+                mkdir -p $out/bin
+                ln -s $out/Applications/PrismLauncher.app/Contents/MacOS/prismlauncher $out/bin/prismlauncher
+              '';
+            });
       });
 
       overlays.default = final: prev: {
