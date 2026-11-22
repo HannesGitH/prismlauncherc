@@ -5,7 +5,12 @@
   };
 
   outputs =
-    { nixpkgs, prismlauncher_upstream, ... }:
+    {
+      self,
+      nixpkgs,
+      prismlauncher_upstream,
+      ...
+    }:
     let
       inherit (nixpkgs) lib;
 
@@ -19,14 +24,15 @@
       forAllSystems = lib.genAttrs systems;
       _systemPkgs = system: nixpkgs.legacyPackages.${system}.pkgs;
       forAllSysPkgs = f: forAllSystems (system: f system (_systemPkgs system));
+
     in
-    rec {
+    {
       packages = forAllSysPkgs (
         system: pkgs:
         let
           prismPkgs = prismlauncher_upstream.packages.${system};
         in
-        rec {
+        {
           patch = pkgs.stdenvNoCC.mkDerivation {
             name = "prism-launcher-patch";
             src = prismPkgs.prismlauncher-unwrapped.src;
@@ -48,7 +54,9 @@
             '';
           };
           default = prismPkgs.prismlauncher.override {
-            prismlauncher-unwrapped = addPatches prismPkgs.prismlauncher-unwrapped [ patch ];
+            prismlauncher-unwrapped = addPatches prismPkgs.prismlauncher-unwrapped [
+              self.packages.${system}.patch
+            ];
           };
         }
       );
@@ -59,7 +67,7 @@
             type = "app";
             program =
               let
-                dir = packages.${system}.default;
+                dir = self.packages.${system}.default;
               in
               if pkgs.stdenv.isDarwin then
                 "${dir}/Applications/PrismLauncher.app/Contents/MacOS/prismlauncher"
@@ -70,7 +78,7 @@
       );
 
       overlays.default = final: prev: {
-        prismlauncher = packages.${final.system}.default;
+        prismlauncher = self.packages.${final.system}.default;
       };
     };
 }
