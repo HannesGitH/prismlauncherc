@@ -1,10 +1,7 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-
-    prismlauncher_upstream = {
-      url = "github:PrismLauncher/PrismLauncher";
-    };
+    prismlauncher_upstream.url = "github:PrismLauncher/PrismLauncher";
   };
 
   outputs =
@@ -17,17 +14,22 @@
         pkg.overrideAttrs (oldAttrs: {
           patches = (oldAttrs.patches or [ ]) ++ patches;
         });
+
       systems = lib.systems.flakeExposed;
-
       forAllSystems = lib.genAttrs systems;
-
-      patch =
-        system:
-        (
-          pkgs: src:
-          pkgs.stdenvNoCC.mkDerivation {
+      _systemPkgs = system: nixpkgs.legacyPackages.${system}.pkgs;
+      forAllSysPkgs = f: forAllSystems (system: f system (_systemPkgs system));
+    in
+    rec {
+      packages = forAllSysPkgs (
+        system: pkgs:
+        let
+          prismPkgs = prismlauncher_upstream.packages.${system};
+        in
+        rec {
+          patch = pkgs.stdenvNoCC.mkDerivation {
             name = "prism-launcher-patch";
-            src = src;
+            src = prismPkgs.prismlauncher-unwrapped.src;
             nativeBuildInputs = with pkgs; [
               git
               gawk
@@ -44,33 +46,19 @@
             installPhase = ''
               cp crack.patch $out
             '';
-          }
-        )
-          nixpkgs.legacyPackages.${system}.pkgs;
-    in
-    rec {
-      packages = forAllSystems (system: {
-        patchFile = patch system prismlauncher_upstream.packages.${system}.prismlauncher-unwrapped.src;
-        default =
-          (
-            (
-              ups:
-              ups.prismlauncher.override {
-                prismlauncher-unwrapped = addPatches ups.prismlauncher-unwrapped [
-                  (patch system ups.prismlauncher-unwrapped.src)
-                ];
-              }
-            )
-              prismlauncher_upstream.packages.${system}
-              # unfortunately this is not executed currently, needs to be fixed
-          ).overrideAttrs
-            (old: {
-              postInstall = lib.optionalString nixpkgs.legacyPackages.${system}.pkgs.stdenv.isDarwin ''
-                mkdir -p $out/bin
-                ln -s $out/Applications/PrismLauncher.app/Contents/MacOS/prismlauncher $out/bin/prismlauncher
-              '';
-            });
-      });
+          };
+          default = prismPkgs.prismlauncher.override {
+            prismlauncher-unwrapped = addPatches prismPkgs.prismlauncher-unwrapped [ patch ];
+          };
+          # .overrideAttrs
+          #   (old: {
+          #     postInstall = lib.optionalString pkgs.stdenv.isDarwin ''
+          #       mkdir -p $out/bin
+          #       ln -s $out/Applications/PrismLauncher.app/Contents/MacOS/prismlauncher $out/bin/prismlauncher
+          #     '';
+          #   });
+        }
+      );
 
       overlays.default = final: prev: {
         prismlauncher = packages.${final.system}.default;
