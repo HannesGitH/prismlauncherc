@@ -50,13 +50,22 @@
           default = prismPkgs.prismlauncher.override {
             prismlauncher-unwrapped = addPatches prismPkgs.prismlauncher-unwrapped [ patch ];
           };
-          # .overrideAttrs
-          #   (old: {
-          #     postInstall = lib.optionalString pkgs.stdenv.isDarwin ''
-          #       mkdir -p $out/bin
-          #       ln -s $out/Applications/PrismLauncher.app/Contents/MacOS/prismlauncher $out/bin/prismlauncher
-          #     '';
-          #   });
+        }
+      );
+
+      apps = forAllSysPkgs (
+        system: pkgs: {
+          default = {
+            type = "app";
+            program =
+              let
+                dir = packages.${system}.default;
+              in
+              if pkgs.stdenv.isDarwin then
+                "${dir}/Applications/PrismLauncher.app/Contents/MacOS/prismlauncher"
+              else
+                "${dir}/bin/prismlauncher";
+          };
         }
       );
 
